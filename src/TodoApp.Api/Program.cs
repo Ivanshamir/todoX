@@ -1,7 +1,15 @@
+using DotNetEnv;
 using Microsoft.EntityFrameworkCore;
 using TodoApp.Core.Interfaces.Repositories;
 using TodoApp.Infrastructure.Data;
 using TodoApp.Infrastructure.Repositories;
+
+var currentDir = Directory.GetCurrentDirectory();
+var solutionDir = Path.GetFullPath(Path.Combine(currentDir, ".."));
+
+var envPath = Path.Combine(solutionDir, ".env");
+Console.WriteLine($"Looking for .env at: {envPath}");
+Env.Load(envPath);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +19,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 // Configure PostgreSQL
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = Environment.GetEnvironmentVariable("POSTGRES_CONNECTION");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
